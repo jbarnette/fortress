@@ -1,4 +1,6 @@
 <VirtualHost *:80>
+  SetEnv PATH /usr/local/bin:/usr/bin:/bin
+
   DocumentRoot <%= @public %>
 
   <% @projects.each do |name| %>
