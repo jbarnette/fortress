@@ -45,7 +45,7 @@ task "add:before", [:repo, :name] do |_, args|
   end
 
   task a(:config) do
-    Dir.chdir dir do
+    Dir.chdir "#{dir}/repo" do
       sh "git config --add cijoe.runner '.git/hooks/runner'"
     end
   end
