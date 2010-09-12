@@ -1,0 +1,70 @@
+desc "Add a new repo."
+task :add, [:repo, :name] => %w(env add:before)
+
+desc "Start over."
+task :clean do
+  File.read(".gitignore").split("\n").each { |f| rm_rf f }
+end
+
+desc "Remove a repo."
+task :rm, [:name] => %w(env rm:before)
+
+task :default do
+  puts "Hi! Read the README."
+end
+
+# No public tasks below here. If you're not using Passenger (or basic
+# auth or whatever) you're probably going to want to start hacking
+# somewhere around the :env and :templates tasks.
+
+task "add:before", [:repo, :name] do |_, args|
+  repo  = args.repo || abort("Need repo!")
+  name  = args.name || File.basename(repo, ".git")
+  tasks = Rake::Task[:add].prerequisites
+
+  directory a("projects/#{name}/public")
+
+  file a("projects/#{name}/repo/.git") do |t|
+    mkdir_p dest = File.dirname(t.name)
+    sh "git clone #{repo} #{dest}"
+  end
+
+  file a("projects/#{name}/config.ru") do |t|
+    ln_s File.expand_path("config/config.ru"), t.name
+  end
+
+  file a("public/#{name}") do |t|
+    ln_s File.expand_path("projects/#{name}/public"), t.name
+  end
+
+  a :templates
+end
+
+task "rm:before", [:name] => :env do |_, args|
+  name = args.name || abort("Need name!")
+  %W(projects/#{name} public/#{name}).each { |n| rm_rf n }
+  Rake::Task[:rm].prerequisites << :templates
+end
+
+task :env => %w(config/htpasswd projects public)
+
+task :templates do
+  require "erb"
+
+  @htpasswd = File.expand_path("config/htpasswd")
+  @projects = Dir["projects/*"].map { |d| File.basename d }
+
+  r "config/templates/apache.conf.erb", "config/apache.conf"
+  r "config/templates/index.html.erb",  "public/index.html"
+end
+
+directory "projects"
+directory "public"
+
+file "config/htpasswd" do |t|
+  puts "Creating #{t.name} entry for #{ENV['USER']}."
+  sh "htpasswd -c config/htpasswd #{ENV['USER']}"
+end
+
+def a *t; Rake::Task[:add].prerequisites.concat t; t.first end
+def r s, t; File.open(t,"wb"){|f|f<< ERB.new(File.read(s)).result} end

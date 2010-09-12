@@ -1,0 +1,19 @@
+<VirtualHost *:80>
+  DocumentRoot <%= @public %>
+
+  <% @projects.each do |name| %>
+    RackBaseURI /<%= name %>
+  <% end %>
+
+  PassengerMaxInstancesPerApp 1 
+  PassengerMaxPoolSize <%= @projects.size %>
+
+  <Directory "/">
+    AuthName "Fortress"
+    AuthType Basic
+    AuthUserFile <%= @htpasswd %>
+    require valid-user
+  </Directory>
+
+  SetEnv RAILS_RELATIVE_URL_ROOT
+</VirtualHost>
