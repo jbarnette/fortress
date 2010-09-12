@@ -4,6 +4,7 @@
     <link href="screen.css" media="screen" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <title>Fortress Joe</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   </head>
   <body>
     <div class="site">
@@ -17,7 +18,7 @@
       <div id="home">
         <ul class="posts">
           <% @projects.each do |p| %>
-            <li>
+            <li class="project" id="<%= p %>">
               <a href="/<%= p %>"><%= p %></a>
             </li>
           <% end %>
@@ -49,4 +50,27 @@
       </div>
     </div>
   </body>
+
+  <script type="text/javascript">
+    $(function() {
+      setInterval(function() {
+        $(".project").each(function() {
+          var li = $(this);
+
+          $.ajax({
+            url: "/" + this.id + "/ping",
+
+            success: function(data, textStatus, xhr) {
+              $(li).removeClass("building failed").addClass("worked");
+            },
+
+            error: function(xhr, textStatus, errorThrown) {
+              /* FIX: depends on contents */
+              $(li).removeClass("building worked").addClass("failed");
+            }
+          });
+        });
+      }, 3000);
+    });
+  </script>
 </html>
