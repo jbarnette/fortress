@@ -1,4 +1,7 @@
-require "rubygems"
+Dir["../../vendor/*/lib"].each do |path|
+  $:.unshift File.expand_path(path)
+end
+
 require "cijoe"
 
 use Rack::CommonLogger
