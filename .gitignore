@@ -1,4 +1,4 @@
 config/apache.conf
 config/htpasswd
-projects
-public
+/projects
+/public
