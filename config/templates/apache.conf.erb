@@ -8,11 +8,14 @@
   PassengerMaxInstancesPerApp 1 
   PassengerMaxPoolSize <%= @projects.size %>
 
-  <Directory "/">
+  <Directory "<%= @public %>">
     AuthName "Fortress"
     AuthType Basic
     AuthUserFile <%= @htpasswd %>
     require valid-user
+
+    Order allow,deny
+    Allow from all
   </Directory>
 
   SetEnv RAILS_RELATIVE_URL_ROOT
