@@ -1,17 +1,52 @@
 <!DOCTYPE html>
-
 <html>
-<head>
-  <title>fuck you</title>
-</head>
+  <head>
+    <link href="screen.css" media="screen" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <title>Fortress Joe</title>
+  </head>
+  <body>
+    <div class="site">
+      <div class="title">
+        <a href="/">Fortress Joe</a>
+        <span class="extra">
+          because the good guys never get an underground lair
+        </span>
+      </div>
 
-<body>
-  <h1>fuck you</h1>
+      <div id="home">
+        <ul class="posts">
+          <% @projects.each do |p| %>
+            <li>
+              <a href="/<%= p %>"><%= p %></a>
+            </li>
+          <% end %>
+        </ul>
+      </div>
 
-  <ul>
-    <% @projects.each do |p| %>
-    <li><a href="/<%= p %>"><%= p %></a></li>
-    <% end %>
-  </ul>
-</body>
+      <div class="footer">
+        <div class="contact">
+          <p>
+            <a href="http://github.com/defunkt/cijoe/tree/master#readme">Documentation</a><br/>
+            <a href="http://github.com/defunkt/cijoe">Source</a><br/>
+            <a href="http://github.com/defunkt/cijoe/issues">Issues</a><br/>
+            <a href="http://twitter.com/defunkt">Twitter</a>
+          </p>
+        </div>
+        <div class="contact">
+          <p>
+            Designed by <a href="http://tom.preston-werner.com/">Tom Preston-Werner</a><br/>
+            Influenced by <a href="http://integrityapp.com/">Integrity</a><br/>
+            Built with <a href="http://sinatrarb.com/">Sinatra</a><br/>
+            Keep it simple, Sam.
+          </p>
+        </div>        
+        <div class="rss">
+          <a href="http://github.com/defunkt/cijoe">
+            <img src="octocat.png" alt="Octocat!" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

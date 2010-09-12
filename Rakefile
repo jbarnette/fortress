@@ -73,7 +73,14 @@ task :templates do
 end
 
 directory "projects"
-directory "public"
+
+file "public" do
+  mkdir "public"
+
+  Dir["vendor/cijoe/lib/cijoe/public/*"].each do |f|
+    ln_s File.expand_path(f), "public/#{File.basename f}"
+  end
+end
 
 file "config/htpasswd" do |t|
   puts "Creating #{t.name} entry for #{ENV['USER']}."
