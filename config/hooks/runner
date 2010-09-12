@@ -1,0 +1,3 @@
+#!/bin/bash
+export RAILS_ENV=development RACK_ENV=development
+rake -st test

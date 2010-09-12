@@ -21,20 +21,33 @@ task "add:before", [:repo, :name] do |_, args|
   repo  = args.repo || abort("Need repo!")
   name  = args.name || File.basename(repo, ".git")
   tasks = Rake::Task[:add].prerequisites
+  dir   = "projects/#{name}"
 
-  directory a("projects/#{name}/public")
+  directory a("#{dir}/public")
 
-  file a("projects/#{name}/repo/.git") do |t|
+  file a("#{dir}/repo/.git") do |t|
     mkdir_p dest = File.dirname(t.name)
     sh "git clone #{repo} #{dest}"
   end
 
-  file a("projects/#{name}/config.ru") do |t|
+  file a("#{dir}/config.ru") do |t|
     ln_s File.expand_path("config/config.ru"), t.name
   end
 
   file a("public/#{name}") do |t|
-    ln_s File.expand_path("projects/#{name}/public"), t.name
+    ln_s File.expand_path("#{dir}/public"), t.name
+  end
+
+  %w(build-failed build-worked runner).each do |hook|
+    file a("#{dir}/repo/.git/hooks/#{hook}") do |t|
+      ln_s File.expand_path("config/hooks/#{hook}"), t.name
+    end
+  end
+
+  task a(:config) do
+    Dir.chdir dir do
+      sh "git config --add cijoe.runner '.git/hooks/runner'"
+    end
   end
 
   a :templates
@@ -51,8 +64,9 @@ task :env => %w(config/htpasswd projects public)
 task :templates do
   require "erb"
 
-  @htpasswd = File.expand_path("config/htpasswd")
+  @htpasswd = File.expand_path "config/htpasswd"
   @projects = Dir["projects/*"].map { |d| File.basename d }
+  @public   = File.expand_path "public"
 
   r "config/templates/apache.conf.erb", "config/apache.conf"
   r "config/templates/index.html.erb",  "public/index.html"
